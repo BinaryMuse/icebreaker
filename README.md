@@ -8,9 +8,7 @@ Icebergs? You mean bitchcicles!
 Requirements
 ------------
 
-[sbt](http://www.scala-sbt.org/)
-
-On OS X, you can install sbt with `brew update && brew install sbt`. The first time you run sbt, it will download the version of Scala that it uses internally. Icebreaker itself uses a specific version of Scala, so sbt may download more than one version of Scala if you run sbt for the first time from within Icebreaker's directory.
+* [sbt](http://www.scala-sbt.org/) - On OS X, you can install sbt with `brew update && brew install sbt`. The first time you run sbt, it will download the version of Scala that it uses internally. Icebreaker itself uses a specific version of Scala, so sbt may download more than one version of Scala if you run sbt for the first time from within Icebreaker's directory.
 
 Installation
 ------------
