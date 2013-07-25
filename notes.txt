@@ -1,0 +1,15 @@
+Notes for Friday hackathon presentation:
+
+* Immutability
+  * Case objects, obj.copy(...), named parameters
+* Option
+  * get, getOrElse
+  * functional combinators (map, etc)
+* Implicit arguments
+* Pattern matching
+  * List destructuring
+* @tailrec
+* Futures
+  * Functional combinators (all Future combinators are functional)
+* ExecutionContext
+  * Analogy to thread pool
