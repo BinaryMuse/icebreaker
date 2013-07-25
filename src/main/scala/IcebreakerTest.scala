@@ -1,33 +1,10 @@
 import com.learnist.icebreaker._
-import com.learnist.icebreaker.CachingProcessor.Cache
+import com.learnist.icebreaker.processors._
 import scala.concurrent.ExecutionContext
 import java.util.concurrent.ConcurrentHashMap
 import scala.collection.JavaConverters._
-
-import scala.concurrent.Future
-
-// class MyFirstProcessor(cache: concurrent.Map[String,Future[Response]])(implicit context: ExecutionContext) extends Processor {
-//   override def process(request: Request, response: Future[Response]) = {
-//     response map { _.copy(title = Some("test")) }
-//     // response
-//   }
-// }
-//
-// class MySecondProcessor(implicit context: ExecutionContext) extends Processor {
-//   override def process(request: Request, response: Future[Response]) = {
-//     response map { resp =>
-//       val newTitle = resp.title map { _.toUpperCase }
-//       val newImages = resp.image_urls ++ List("images/test.png")
-//       resp.copy(title = newTitle, image_urls = newImages, content_type = Some(HuluVideo))
-//     }
-//   }
-// }
-
-class DefaultHtmlProcessor(cache: Cache)(implicit context: ExecutionContext) extends CachingProcessor {
-  override def process(request: Request, response: Future[Response]) = {
-    response
-  }
-}
+import scala.concurrent.{Future,Await}
+import com.ning.http.client
 
 object YourApp extends App {
   // Icebreaker requires an ExecutionContext;
@@ -35,7 +12,7 @@ object YourApp extends App {
   import ExecutionContext.Implicits.global
 
   // Create a stack of Processors to chain
-  val cache = new ConcurrentHashMap[String, Future[Response]]().asScala
+  val cache = new ConcurrentHashMap[String, Future[client.Response]]().asScala
   val stack = List(
     new DefaultHtmlProcessor(cache)
   )
@@ -45,12 +22,16 @@ object YourApp extends App {
   val futureResponse = icebreaker.scrape("http://www.google.com/")
 
   futureResponse onSuccess {
-    case Response(title, image_urls, None, content_metadata) =>
-      println("OMG NO CONTENT TYPE WHAT DO I DO")
-    case Response(title, image_urls, Some(content_type), content_metadata) =>
-      println(title)
-      println(image_urls)
-      println(content_type)
-      println(content_metadata)
+    case Response(title, image_urls, content_type, content_metadata) =>
+      println(s"           Title: $title")
+      println(s"          Images: $image_urls")
+      println(s"    Content Type: $content_type")
+      println(s"Content Metadata: $content_metadata")
   }
+
+  futureResponse onFailure {
+    case e => println(e)
+  }
+
+  Await.ready(futureResponse, scala.concurrent.duration.Duration("10 seconds"))
 }
