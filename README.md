@@ -38,7 +38,7 @@ object YourApp extends App {
   )
   val icebreaker = new Icebreaker(stack)
 
-  // Scrape a URL; returns Future[Environment]
-  val futureEnvironment = icebreaker.scrape("http://some/url")
+  // Scrape a URL; returns Future[Response]
+  val futureResponse = icebreaker.scrape("http://some/url")
 }
 ```
