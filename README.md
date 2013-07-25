@@ -3,7 +3,7 @@ Icebreaker
 
 ![Icebreaker](media/icebreaker.png)
 
-Scraper on steroids
+Icebergs? You mean bitchcicles!
 
 Requirements
 ------------
