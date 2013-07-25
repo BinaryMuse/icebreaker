@@ -1,28 +1,15 @@
 import com.learnist.icebreaker._
 import com.learnist.icebreaker.processors._
-import scala.concurrent.ExecutionContext
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
 import java.util.concurrent.ConcurrentHashMap
 import scala.collection.JavaConverters._
 import scala.concurrent.{Future,Await}
 import com.ning.http.client
 
-object YourApp extends App {
+object IcebreakerTest extends App {
   val urls = if (args.length > 0) args else Array("http://google.com/")
 
-  // Icebreaker requires an ExecutionContext;
-  // create one or import the default
-  import ExecutionContext.Implicits.global
-
-  // Create a stack of Processors to chain
-  // val cache = new ConcurrentHashMap[String, Future[client.Response]]().asScala
-  // val stack = List(
-  //   new DefaultHtmlProcessor(cache)
-  // )
-  // val icebreaker = new Icebreaker(stack)
-
-  // val futureResponse = icebreaker.scrape(url)
-
-  // Scrape a URL; returns Future[Response]
   val responses = urls.toList.map { url =>
     val cache = new ConcurrentHashMap[String, Future[client.Response]]().asScala
     val stack = List(
@@ -48,5 +35,5 @@ object YourApp extends App {
       }
   }
 
-  Await.ready(responsesFuture, scala.concurrent.duration.Duration("10 seconds"))
+  Await.ready(responsesFuture, 10.seconds)
 }
