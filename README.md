@@ -72,3 +72,8 @@ class TitleCapitalizer(implicit context: ExecutionContext) extends Processor {
   }
 }
 ```
+
+License
+-------
+
+This software is licensed under the MIT license. See the `LICENSE` file for more information.
