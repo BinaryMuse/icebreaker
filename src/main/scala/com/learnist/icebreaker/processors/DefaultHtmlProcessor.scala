@@ -8,21 +8,26 @@ import org.jsoup.Jsoup
 
 class DefaultHtmlProcessor(cache: Cache)(implicit context: ExecutionContext) extends CachingProcessor {
   override def process(request: Request, response: Future[Response]): Future[Response] = {
-    for {
+    val req = cache.getOrElseUpdate(request.url, getPage(request.url))
+
+    val newResponse = for {
       response <- response
-      page <- cache.getOrElseUpdate(request.url, getPage(request.url))
+      page <- req
     } yield {
       val titleOpt = extractTitle(request.url, page.getResponseBody)
       val imageUrls = response.image_urls ++ extractImages(page.getResponseBody)
       response.copy(title = titleOpt, content_type = Some(Html), image_urls = imageUrls)
     }
+
+    // If we fail to contac the host, abandon all hope and return the original response.
+    newResponse recoverWith {
+      case _ => response
+    }
   }
 
   def getPage(address: String) = {
-    cache getOrElseUpdate(address, {
-      val req = url(address)
-      Http(req)
-    })
+    val req = url(address)
+    Http.configure(_ setFollowRedirects true)(req)
   }
 
   def extractTitle(address: String, body: String): Option[String] = {

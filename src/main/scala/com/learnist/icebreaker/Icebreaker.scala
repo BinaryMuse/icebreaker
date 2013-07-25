@@ -7,7 +7,7 @@ import scala.concurrent.ExecutionContext
 class Icebreaker(stack: Seq[Processor])(implicit context: ExecutionContext = ExecutionContext.Implicits.global) {
   def scrape(address: String): Future[Response] = {
     val request = Request(address)
-    val response = Future(Response(None, Nil, None, Map()))
+    val response = Future(Response(address, None, Nil, None, Map()))
     next(request, response, stack.toList)
   }
 
