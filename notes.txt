@@ -15,4 +15,5 @@ Notes for Friday hackathon presentation:
   * Analogy to thread pool
 * Optional typing/type inference
 * Apply - function calls, destructuring (de-apply) etc., partially-applied functions
+* Recover with - in terms of for comprehension, returns failed future
 * Cat pictures
