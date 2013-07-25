@@ -27,8 +27,8 @@ import com.learnist.icebreaker._
 import scala.concurrent.ExecutionContext
 
 object YourApp extends App {
-  // Icebreaker requires an ExecutionContext;
-  // create one or import the default
+  // Icebreaker uses a default implicit ExecutionContext if you don't supply one,
+  // but we'll need one anyway to evaluate the Future[Response] Icebreaker returns.
   import ExecutionContext.Implicits.global
 
   // Create a stack of Processors to chain
@@ -40,5 +40,21 @@ object YourApp extends App {
 
   // Scrape a URL; returns Future[Response]
   val futureResponse = icebreaker.scrape("http://some/url")
+
+  futureResponse onSuccess {
+    // ...
+  }
 }
+```
+
+The work your processors do is very free-form, and can be created however you please. For example, if you plan on doing a lot of HTTP requests, you could create a cache object:
+
+```scala
+val cache = new ConcurrentHashMap[String,String]()
+val stack = List(
+  new FirstHttpProcessor(cache),
+  new SecondHttpProcessor(cache),
+  new NonHttpProcessor
+)
+val icebreaker = new Icebreaker(stack)
 ```
