@@ -27,18 +27,18 @@ import com.learnist.icebreaker._
 import scala.concurrent.ExecutionContext
 
 object YourApp extends App {
-  # Icebreaker requires an ExecutionContext;
-  # create one or import the default
+  // Icebreaker requires an ExecutionContext;
+  // create one or import the default
   import ExecutionContext.Implicits.global
 
-  # Create a stack of Processors to chain
+  // Create a stack of Processors to chain
   val stack = List(
     new MyFirstProcessor
     new MySecondProcessor
   )
   val icebreaker = new Icebreaker(stack)
 
-  # Scrape a URL; returns Future[Environment]
+  // Scrape a URL; returns Future[Environment]
   val futureEnvironment = icebreaker.scrape("http://some/url")
 }
 ```
