@@ -29,6 +29,7 @@ import scala.concurrent.ExecutionContext
 object YourApp extends App {
   // Icebreaker uses a default implicit ExecutionContext if you don't supply one,
   // but we'll need one anyway to evaluate the Future[Response] Icebreaker returns.
+  // Most (all?) processors will also need an ExecutionContext.
   import ExecutionContext.Implicits.global
 
   // Create a stack of Processors to chain
@@ -57,4 +58,17 @@ val stack = List(
   new NonHttpProcessor
 )
 val icebreaker = new Icebreaker(stack)
+```
+
+Processors must define a `process` method that takes a request and the current (future) response and returns a new (future) response.
+
+```scala
+class TitleCapitalizer(implicit context: ExecutionContext) extends Processor {
+  override def process(request: Request, response: Future[Response]) = {
+    response map { resp =>
+      val newTitle = resp.title map { _.toUpperCase }
+      resp.copy(title = newTitle)
+    }
+  }
+}
 ```
