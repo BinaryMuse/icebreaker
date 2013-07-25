@@ -3,7 +3,9 @@ Icebreaker
 
 ![Icebreaker](media/icebreaker.png)
 
-Icebergs? You mean bitchcicles!
+"Icebergs? You mean bitchcicles!"
+
+Warning: this project developed during a hackathon. Not responsible for leaky abstractions, poor idioms, or just plain bad ideas. I probably wouldn't use this in production.
 
 Requirements
 ------------
