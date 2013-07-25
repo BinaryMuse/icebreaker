@@ -13,3 +13,6 @@ Notes for Friday hackathon presentation:
   * Functional combinators (all Future combinators are functional)
 * ExecutionContext
   * Analogy to thread pool
+* Optional typing/type inference
+* Apply - function calls, destructuring (de-apply) etc., partially-applied functions
+* Cat pictures
