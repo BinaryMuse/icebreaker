@@ -5,6 +5,7 @@ import com.learnist.icebreaker._
 import CachingProcessor.Cache
 import scala.concurrent.ExecutionContext
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Element
 
 class DefaultHtmlProcessor(cache: Cache)(implicit context: ExecutionContext) extends CachingProcessor {
   override def process(request: Request, response: Future[Response]): Future[Response] = {
@@ -15,7 +16,7 @@ class DefaultHtmlProcessor(cache: Cache)(implicit context: ExecutionContext) ext
       page <- req
     } yield {
       val titleOpt = extractTitle(request.url, page.getResponseBody)
-      val imageUrls = response.image_urls ++ extractImages(page.getResponseBody)
+      val imageUrls = response.image_urls ++ extractImages(request.url, page.getResponseBody)
       response.copy(title = titleOpt, content_type = Some(Html), image_urls = imageUrls)
     }
 
@@ -27,7 +28,7 @@ class DefaultHtmlProcessor(cache: Cache)(implicit context: ExecutionContext) ext
 
   def getPage(address: String) = {
     val req = url(address)
-    Http.configure(_ setFollowRedirects true)(req)
+    Http.configure(_.setFollowRedirects(true).setConnectionTimeoutInMs(2500))(req)
   }
 
   def extractTitle(address: String, body: String): Option[String] = {
@@ -37,7 +38,12 @@ class DefaultHtmlProcessor(cache: Cache)(implicit context: ExecutionContext) ext
     else None
   }
 
-  def extractImages(body: String): Seq[String] = {
-    List()
+  def extractImages(address: String, body: String): Seq[String] = {
+    val doc = Jsoup.parse(body, address)
+    val imageElems = doc.select("img").toArray(Array[Element]())
+    val srcs = imageElems map { elem =>
+      elem.attr("src")
+    }
+    srcs toList
   }
 }
