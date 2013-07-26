@@ -1,7 +1,7 @@
 import com.learnist.icebreaker._
 import com.learnist.icebreaker.processors._
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext//.Implicits.global
+import scala.concurrent.ExecutionContext
 import java.util.concurrent.Executors
 import java.util.concurrent.ConcurrentHashMap
 import scala.collection.JavaConverters._
