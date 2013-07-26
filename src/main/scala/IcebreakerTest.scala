@@ -13,23 +13,18 @@ import scala.io.Source
 object IcebreakerTest extends App {
   // val urls = if (args.length > 0) args else Array("http://google.com/")
 
-  val urls = Source.fromFile("/Users/grockit/workspace/icebreaker/topsites.txt").getLines.toList.take(500).map { "http://" + _ + "/" }
+  val urls = Source.fromFile("/Users/grockit/workspace/icebreaker/learnist_web_urls").getLines.take(1000)
 
-  implicit val ec = new ExecutionContext {
-    val threadPool = Executors.newFixedThreadPool(1000);
-    def execute(runnable: Runnable) {
-      threadPool.submit(runnable)
-    }
-    def reportFailure(t: Throwable) {}
-  }
+  import ExecutionContext.Implicits.global
 
-  println("Starting...")
+  // This cache is shared for EVERY scraped URL, not ideal API.
+  val cache = new ConcurrentHashMap[String, Future[client.Response]]().asScala
+  val stack = List(
+    new DefaultHtmlProcessor(cache)
+  )
+  val icebreaker = new Icebreaker(stack)
+
   val responses = urls.toList.map { url =>
-    val cache = new ConcurrentHashMap[String, Future[client.Response]]().asScala
-    val stack = List(
-      new DefaultHtmlProcessor(cache)
-    )
-    val icebreaker = new Icebreaker(stack)
     val resp = icebreaker.scrape(url)
 
     resp onSuccess {
@@ -41,24 +36,14 @@ object IcebreakerTest extends App {
                     |Content Metadata: $content_metadata\n""".stripMargin)
     }
 
+    resp onFailure {
+      case x => println(s"Scraper failed on a URL: $x")
+    }
+
     resp
   }
 
   val responsesFuture = Future.sequence(responses)
-
-  // responsesFuture onSuccess {
-  //   case list =>
-  //     for {
-  //       response <- list
-  //     } response match {
-  //       case Response(url, title, image_urls, content_type, content_metadata) =>
-  //         println(s"             URL: $url")
-  //         println(s"           Title: $title")
-  //         println(s"          Images: $image_urls")
-  //         println(s"    Content Type: $content_type")
-  //         println(s"Content Metadata: $content_metadata\n")
-  //     }
-  // }
 
   Await.ready(responsesFuture, 30.seconds)
 }
