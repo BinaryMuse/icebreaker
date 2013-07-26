@@ -1,7 +1,24 @@
-def multiplyByTen(implicit x: Int) = x * 10
+object IntegerImprovements {
+  implicit class TimeMethods(val x: Int) {
+    def seconds: Long = x * 1000
+    def second = seconds
 
-println(multiplyByTen(5))
+    def minutes: Long = seconds * 60
+    def minute = minutes
 
-implicit val num = 50
+    def hours: Long   = minutes * 60
+    def hour = hours
 
-println(multiplyByTen)
+    def days: Long    = hours * 24
+    def day = days
+  }
+}
+
+import IntegerImprovements.TimeMethods
+
+val x = 10
+
+println(s"$x seconds: ${x.seconds} ms")
+println(s"$x minutes: ${x.minutes} ms")
+println(s"  $x hours: ${x.hours} ms")
+println(s"   $x days: ${x.days} ms")
