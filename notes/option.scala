@@ -4,8 +4,13 @@
 //   * Some(thing)
 //   * None
 
-val maybeString: Option[String] = Some("I'm a real boy!")
-println(maybeString map { _.toUpperCase })
+var maybeString: Option[String] = Some("I'm a real boy!")
+maybeString = maybeString map { _.toUpperCase }
 
-val maybeNotString: Option[String] = None
-println(maybeNotString map { _.toUpperCase })
+println(maybeString.getOrElse("nobody"))
+
+
+var maybeNotString: Option[String] = None
+maybeNotString = maybeNotString map { _.toUpperCase }
+
+println(maybeNotString.getOrElse("nobody"))
