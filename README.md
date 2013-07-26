@@ -3,7 +3,7 @@ Icebreaker
 
 ![Icebreaker](media/icebreaker.png)
 
-Warning: this project developed during a hackathon. Not responsible for leaky abstractions, poor idioms, or plain ol' bad ideas. I probably wouldn't use this in production.
+Warning: this project developed during a hackathon to explore the Scala language and its asynchronous APIs. Not responsible for leaky abstractions, poor idioms, or plain ol' bad ideas. I probably wouldn't use this in production.
 
 Requirements
 ------------
