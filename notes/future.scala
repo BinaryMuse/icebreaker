@@ -17,4 +17,5 @@ oneDay onComplete {
   case Failure(ex) => println(s"Oh no! $ex")
 }
 
+println("Waiting...")
 Await.ready(oneDay, 10.seconds) // block this thread until we have a result
