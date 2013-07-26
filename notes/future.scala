@@ -4,7 +4,7 @@ import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global // default thread pool
 
 var oneDay = future {
-  Thread.sleep(3000)
+  Thread.sleep(3000) // twiddling thumbs
   10
 }
 

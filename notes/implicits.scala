@@ -1,5 +1,9 @@
+import scala.language.implicitConversions
+
 object IntegerImprovements {
-  implicit class TimeMethods(val x: Int) {
+  implicit def IntToLong(x: Int) = x.toLong
+
+  implicit class TimeMethods[T <% Long](val x: T) {
     def seconds: Long = x * 1000
     def second = seconds
 
@@ -14,7 +18,7 @@ object IntegerImprovements {
   }
 }
 
-import IntegerImprovements.TimeMethods
+import IntegerImprovements._
 
 val x = 10
 
