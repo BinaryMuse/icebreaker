@@ -6,6 +6,7 @@ import CachingProcessor.Cache
 import scala.concurrent.ExecutionContext
 
 import dispatch._
+import java.net.URI
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document,Element}
 
@@ -21,7 +22,7 @@ class DefaultHtmlProcessor(cache: Cache)(implicit context: ExecutionContext) ext
     } yield {
       implicit val doc = parseHtml(request.url, page.getResponseBody)
       val titleOpt = extractTitle
-      val imageUrls = response.image_urls ++ extractImages
+      val imageUrls = response.image_urls ++ extractImages(request.url)
       response.copy(title = titleOpt, content_type = Some(Html), image_urls = imageUrls)
     }
 
@@ -45,8 +46,10 @@ class DefaultHtmlProcessor(cache: Cache)(implicit context: ExecutionContext) ext
     else None
   }
 
-  private def extractImages(implicit doc: Document): Seq[String] = {
+  private def extractImages(address: String)(implicit doc: Document): Seq[String] = {
+    val base = new URI(address)
     val imageElems = doc.select("img").toArray(Array[Element]())
-    imageElems.map(_.attr("src")).toList
+    val imageUris = imageElems.map(_.attr("src")).map { (img: String) => base.resolve(new URI(img)) }
+    imageUris.map(_.toString).toList
   }
 }
