@@ -1,49 +1,52 @@
 package com.learnist.icebreaker.processors
 
-import dispatch._
 import com.learnist.icebreaker._
 import CachingProcessor.Cache
+
 import scala.concurrent.ExecutionContext
+
+import dispatch._
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
+import org.jsoup.nodes.{Document,Element}
 
 class DefaultHtmlProcessor(cache: Cache)(implicit context: ExecutionContext) extends CachingProcessor {
   override def process(request: Request, response: Future[Response]): Future[Response] = {
     val req = cache.getOrElseUpdate(request.url, getPage(request.url))
 
+    // Once response and req succeed, transform them into a new Future
+    // that includes the extracted title, images, and content_type 
     val newResponse = for {
       response <- response
       page <- req
     } yield {
-      val titleOpt = extractTitle(request.url, page.getResponseBody)
-      val imageUrls = response.image_urls ++ extractImages(request.url, page.getResponseBody)
+      implicit val doc = parseHtml(request.url, page.getResponseBody)
+      val titleOpt = extractTitle
+      val imageUrls = response.image_urls ++ extractImages
       response.copy(title = titleOpt, content_type = Some(Html), image_urls = imageUrls)
     }
 
-    // If we fail to contac the host, abandon all hope and return the original response.
+    // If the for comprehension resulved in a FAILED Future, just fall
+    // back to the original response we were given originally.
     newResponse recoverWith {
       case _ => response
     }
   }
 
-  def getPage(address: String) = {
+  private def getPage(address: String) = {
     val req = url(address)
     Http.configure(_.setFollowRedirects(true).setConnectionTimeoutInMs(2500))(req)
   }
 
-  def extractTitle(address: String, body: String): Option[String] = {
-    val doc = Jsoup.parse(body, address)
+  private def parseHtml(address: String, body: String): Document = Jsoup.parse(body, address)
+
+  private def extractTitle(implicit doc: Document): Option[String] = {
     val titleElems = doc.select("title")
     if (titleElems.size > 0) Some(titleElems.first.text)
     else None
   }
 
-  def extractImages(address: String, body: String): Seq[String] = {
-    val doc = Jsoup.parse(body, address)
+  private def extractImages(implicit doc: Document): Seq[String] = {
     val imageElems = doc.select("img").toArray(Array[Element]())
-    val srcs = imageElems map { elem =>
-      elem.attr("src")
-    }
-    srcs toList
+    imageElems.map(_.attr("src")).toList
   }
 }
