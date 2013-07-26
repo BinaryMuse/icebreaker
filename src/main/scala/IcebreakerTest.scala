@@ -3,6 +3,7 @@ import com.learnist.icebreaker.processors._
 
 import scala.io.Source
 import scala.concurrent._
+import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
 import scala.collection.JavaConverters._
 import scala.util.{Success,Failure}
@@ -44,8 +45,8 @@ object IcebreakerTest extends App {
     }
   }
 
-  // val responsesFuture = Future.sequence(responses)
-
-  // Await.ready(responsesFuture, 30.seconds)
-  // System.exit(0)
+  val responsesFuture = Future.sequence(responses)
+  Await.ready(responsesFuture, 30.seconds)
+  Thread.sleep(1000)
+  System.exit(0)
 }
